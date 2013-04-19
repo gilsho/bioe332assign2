@@ -5,16 +5,16 @@ from matplotlib.pyplot import *
 
 
 
-def smooth_rates(r,bins):
-    smooth_r = zeros(len(r))
-    for i in range(len(r)):
-        sum = 0
-        count = 0
-        for j in range(min(0,i-bins),i):
-            sum += r[j]
-            count += 1
-        smooth_r[i] = sum/count
-    return smooth_r
+# def smooth_rates(r,bins):
+#     smooth_r = zeros(len(r))
+#     for i in range(len(r)):
+#         sum = 0
+#         count = 0
+#         for j in range(min(0,i-bins),i):
+#             sum += r[j]
+#             count += 1
+#         smooth_r[i] = sum/count
+#     return smooth_r
 
 
 def make_raster_rate_plot(r1, r2, m1, m2, t,name=''):
@@ -36,10 +36,8 @@ def make_raster_rate_plot(r1, r2, m1, m2, t,name=''):
 
     # raster plot for selective population 3
     subplot(313)
-    r1_smooth = smooth_rates(r1,10)
-    r2_smooth = smooth_rates(r2,10)
-    plot(t,r1_smooth,color='r',linewidth=2)
-    plot(t,r2_smooth,color='b',linewidth=2)
+    plot(t,r1,color='r',linewidth=2)
+    plot(t,r2,color='b',linewidth=2)
     axvline(x=stim_start/dt_sim, linestyle='--',color='k')
     axvline(x=stim_stop/dt_sim, linestyle='--',color='k')
     xlabel('Time, s')
@@ -52,8 +50,8 @@ def make_raster_rate_plot(r1, r2, m1, m2, t,name=''):
 def make_network_dynamics_plot(r1t1, r2t1,r1t2,r2t2,name=''):
     fig = figure()
     plot(range(0,40),range(0,40),color='k',linestyle='--')
-    plot(smooth_rates(r1t1,10),smooth_rates(r2t1,10),color='y',linewidth=4)
-    plot(smooth_rates(r1t2,10),smooth_rates(r2t1,10),color='g',linewidth=4)    
+    plot(r1t1,r2t1,color='y',linewidth=4)
+    plot(r1t2,r2t1,color='g',linewidth=4)    
     axis([0,40,0,40])
     ylabel('Firing rate rb, Hz')
     xlabel('Firing rate ra, Hz')

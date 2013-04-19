@@ -9,8 +9,8 @@ import math
 
 # parse arguments according to format:
 parser = argparse.ArgumentParser()
-parser.add_argument('-s', type = int, default = 1)
-parser.add_argument('-c', type = int, default = 0)
+parser.add_argument('-s', type = int, default = 0)
+parser.add_argument('-c', type = int, default = 10)
 
 pa = parser.parse_args()
 numpy.random.seed(pa.s)
@@ -38,8 +38,8 @@ decision_clock = Clock(dt = 10*ms)
 coherence = pa.c
 mu = 40 * Hz
 sigmaMu = 4 * Hz
-stim_start = 1 * second
-stim_stop = 2 * second
+stim_start = 0.2 * second
+stim_stop = 0.6 * second
 rate_threshold = 15
 
 
@@ -67,7 +67,7 @@ tr_i = 1 * msecond    # refractory time tau
 # to each neuron at a rate of v_ext = 1800 Hz per cell
 fext = 2400 * Hz
 
-# equation 3 constants
+# equation constants
 a = 0.062 * 1/mvolt
 b = 1/3.57
 
@@ -157,6 +157,8 @@ Cpi = IdentityConnection(PGi, Pi, 's_ampa', weight=w_ext_i)
 
 # set up recurrent inhibition from inhibitory to excitatory cells
 Cie = Connection(Pi, Pe, 's_gaba', weight=1.0, delay=0.5*ms)
+Cei = Connection(Pe, Pi, 's_ampa', weight=1.0, delay=0.5*ms)
+Cii = Connection(Pi, Pi, 's_gaba', weight=1.0, delay=0.5*ms)
 
 # set up synaptic latency for NMDA gating
 selfnmda = IdentityConnection(Pe,Pe,'x',weight=1.0,delay=0.5*ms)
@@ -207,16 +209,16 @@ def get_rate(r):
     j = len(r)
     return numpy.average(numpy.array(r[i:j]))
 
-@network_operation(decision_clock,when='end')
-def check_decision(decision_clock):
-    r1 = get_rate(rate_Pe1.rate)
-    r2 = get_rate(rate_Pe2.rate)
-    if r1 > rate_threshold:
-        record_decision(1,decision_clock.t)
-        stop()
-    elif r2 > rate_threshold:
-        record_decision(0,decision_clock.t)
-        stop()
+# @network_operation(decision_clock,when='end')
+# def check_decision(decision_clock):
+#     r1 = get_rate(rate_Pe1.rate)
+#     r2 = get_rate(rate_Pe2.rate)
+#     if r1 > rate_threshold:
+#         record_decision(1,decision_clock.t)
+#         stop()
+#     elif r2 > rate_threshold:
+#         record_decision(0,decision_clock.t)
+#         stop()
 
 
 def save_rate(rs,n):
@@ -243,8 +245,8 @@ Me = SpikeMonitor(Pe)
 #execute the simulation
 run(sim_duration)
 
-save_rate(rate_Pe1.rate,1)
-save_rate(rate_Pe2.rate,2)
+save_rate(rate_Pe1.smooth_rate(width=50*ms,filter='flat'),1)
+save_rate(rate_Pe1.smooth_rate(width=50*ms,filter='flat'),2)
 
-#close files
-#fpopv.close()   
+
+ 
