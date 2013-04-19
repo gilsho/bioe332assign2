@@ -17,32 +17,34 @@ from matplotlib.pyplot import *
 #     return smooth_r
 
 
-def make_raster_rate_plot(r1, r2, m1, m2, t,name=''):
-    t_vec = numpy.arange(0,t,dt_sim)
+def make_raster_rate_plot(r1, r2, m1, m2, t,
+                          stim_start,stim_stop,name=''):
+    dt = float(t)/len(r1)
+    t_vec = numpy.arange(0,t,dt)
     fig = figure()
     # raster plot for selective population 1
     subplot(311)
     raster_plot(m1)
     axvline(x=0,linewidth=8, color='r')
-    axvline(x=stim_start/dt_sim, linestyle='--',color='k')
-    axvline(x=stim_stop/dt_sim, linestyle='--',color='k')
+    axvline(x=stim_start, linestyle='--',color='k')
+    axvline(x=stim_stop, linestyle='--',color='k')
 
     # raster plot for selective population 2
     subplot(312)
     raster_plot(m2)
     axvline(x=0,linewidth=8, color='b')
-    axvline(x=stim_start/dt_sim, linestyle='--',color='k')
-    axvline(x=stim_stop/dt_sim, linestyle='--',color='k')
+    axvline(x=stim_start, linestyle='--',color='k')
+    axvline(x=stim_stop, linestyle='--',color='k')
 
     # raster plot for selective population 3
     subplot(313)
-    plot(t,r1,color='r',linewidth=2)
-    plot(t,r2,color='b',linewidth=2)
-    axvline(x=stim_start/dt_sim, linestyle='--',color='k')
-    axvline(x=stim_stop/dt_sim, linestyle='--',color='k')
+    plot(t_vec,r1,color='r',linewidth=2)
+    plot(t_vec,r2,color='b',linewidth=2)
+    axvline(x=stim_start, linestyle='--',color='k')
+    axvline(x=stim_stop, linestyle='--',color='k')
     xlabel('Time, s')
     ylabel('Firing rate, Hz')
-    axis([0,3,0,30])
+    axis([0,3,0,40])
     
     if name is not '':
         savefig(name)
