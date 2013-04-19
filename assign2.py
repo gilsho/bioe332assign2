@@ -5,11 +5,21 @@ from matplotlib.pyplot import *
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-s', type = int, default = 1)
-parser.add_argument('-c', type = float, default = 0)
+parser.add_argument('-k', type = int, default = 0)
+#parser.add_argument('-s', type = int, default = 0)
+#parser.add_argument('-c', type = float, default = 0)
 pa = parser.parse_args()
-numpy.random.seed(pa.s)
+#numpy.random.seed(pa.s)
+numpy.random.seed(pa.k)
 
+# since we can receive only one argument from qsub, we parse this
+# argument to determine the coherence and trial number
+
+N_TRIALS_PER_LEVEL = 20
+COHERENCE_LEVELS = [3,6.05,12.2,24.6,49.59,100]
+
+c = COHERENCE_LEVELS[pa.k/N_TRIALS_PER_LEVEL]
+trial = pa.k % N_TRIALS_PER_LEVEL
 
 # population sizes
 Ne = 1600               # number of excitatory (pyramidal) neurons
@@ -30,11 +40,12 @@ rate_clock = Clock(dt=50*ms)
 decision_clock = Clock(dt = 10*ms)
 
 # stimulus parameters
-coherence = pa.c
+#coherence = pa.c
+coherence = c
 mu = 40 * Hz
 sigmaMu = 4 * Hz
-stim_start = 1*second
-stim_stop =  2*second
+stim_start = 0*second
+stim_stop =  1*second
 rate_threshold = 15
 
 
@@ -194,7 +205,8 @@ def update_rates(rate_clock):
         PGe2.rate = fext
 
 def record_decision(correct,dtime):
-    ftrial = open('trial' + str(pa.s) + '.dat','w+')
+    ftrial = open('coh' + str(c) + 'trial' + 
+                   str(trial) + '.dat','w+')
     ftrial.write(str(correct) + '\n')
     ftrial.write(str(dtime/msecond) + '\n')
     ftrial.close()
@@ -204,16 +216,16 @@ def get_rate(r):
     j = len(r)
     return numpy.average(numpy.array(r[i:j]))
 
-# @network_operation(decision_clock,when='end')
-# def check_decision(decision_clock):
-#     r1 = get_rate(rate_Pe1.rate)
-#     r2 = get_rate(rate_Pe2.rate)
-#     if r1 > rate_threshold:
-#         record_decision(1,decision_clock.t)
-#         stop()
-#     elif r2 > rate_threshold:
-#         record_decision(0,decision_clock.t)
-#         stop()
+@network_operation(decision_clock,when='end')
+def check_decision(decision_clock):
+    r1 = get_rate(rate_Pe1.rate)
+    r2 = get_rate(rate_Pe2.rate)
+    if r1 > rate_threshold:
+        record_decision(1,decision_clock.t)
+        stop()
+    elif r2 > rate_threshold:
+        record_decision(0,decision_clock.t)
+        stop()
 
 
 def save_rate(rs,n):
@@ -240,8 +252,8 @@ Me = SpikeMonitor(Pe)
 #execute the simulation
 run(sim_duration)
 
-save_rate(rate_Pe1.smooth_rate(width=50*ms,filter='flat'),1)
-save_rate(rate_Pe1.smooth_rate(width=50*ms,filter='flat'),2)
+# save_rate(rate_Pe1.smooth_rate(width=50*ms,filter='flat'),1)
+# save_rate(rate_Pe1.smooth_rate(width=50*ms,filter='flat'),2)
 
 
  

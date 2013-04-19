@@ -53,7 +53,7 @@ def make_network_dynamics_plot(r1t1, r2t1,r1t2,r2t2,name=''):
     fig = figure()
     plot(range(0,40),range(0,40),color='k',linestyle='--')
     plot(r1t1,r2t1,color='y',linewidth=4)
-    plot(r1t2,r2t1,color='g',linewidth=4)    
+    plot(r1t2,r2t2,color='g',linewidth=4)    
     axis([0,40,0,40])
     ylabel('Firing rate rb, Hz')
     xlabel('Firing rate ra, Hz')
@@ -112,18 +112,6 @@ def load_stats(coh,ntrials):
         mean.append(m)
         stdev.append(s)
 
-
-
-r1t1 = rand(600)*20
-r2t1 = rand(600)*20
-r1t2 = rand(600)*20
-r2t2 = rand(600)*20
-
-#r1t1 = load_rates('rate1_1.dat')
-#r2t1 = load_rates('rate1_2.dat')
-#r1t2 = load_rates('rate0_1.dat')
-#r2t2 = load_rates('rate0_2.dat')
-make_network_dynamics_plot(r1t1,r2t1,r1t2,r2t2,'test')
 
 
 coh = [3,6.05,12.2,24.6,49.59,100]
