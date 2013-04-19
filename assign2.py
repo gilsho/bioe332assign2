@@ -1,17 +1,12 @@
-#import brian_no_units
+import brian_no_units
 from brian import *
-from scipy.special import erf
 import numpy
-from numpy.fft import rfft, irfft
 from matplotlib.pyplot import *
 import argparse
-import math
 
-# parse arguments according to format:
 parser = argparse.ArgumentParser()
-parser.add_argument('-s', type = int, default = 0)
-parser.add_argument('-c', type = int, default = 10)
-
+parser.add_argument('-s', type = int, default = 1)
+parser.add_argument('-c', type = float, default = 0)
 pa = parser.parse_args()
 numpy.random.seed(pa.s)
 
@@ -27,7 +22,7 @@ Ne2 = int(f*Ne)
 Ne0 = Ne-(Ne1+Ne2)
 
 # clock parameters 
-dt_sim = 0.2*ms
+dt_sim = 0.02*ms
 sim_duration = 3 * second    # in seconds
 
 simulation_clock = Clock(dt = dt_sim)
@@ -38,8 +33,8 @@ decision_clock = Clock(dt = 10*ms)
 coherence = pa.c
 mu = 40 * Hz
 sigmaMu = 4 * Hz
-stim_start = 0.2 * second
-stim_stop = 0.6 * second
+stim_start = 1*second
+stim_stop =  2*second
 rate_threshold = 15
 
 
@@ -51,7 +46,7 @@ gl_e = 25 * nS            # total leak conductance gL
 El_e = -70 * mvolt        # leak reversal potential El
 Vt_e = -50 * mvolt        # threshold potential Vt
 Vr_e = -55 * mvolt        # reset potential Vr
-tr_e = 2 * msecond    # refractory time tau
+tr_e = 2 * msecond        # refractory time tau
 
 
 # interneurons
@@ -60,7 +55,7 @@ gl_i = 20 * nS            # total leak conductance gL
 El_i = -70 * mvolt        
 Vt_i = -50 * mvolt        # threshold potential Vt
 Vr_i = -55 * mvolt        # reset potential Vr
-tr_i = 1 * msecond    # refractory time tau
+tr_i = 1 * msecond        # refractory time tau
 
 
 # external input is modeled as uncorrelated Poisson spike trains
@@ -80,7 +75,7 @@ g_gaba_e = 1.3 *nS
 g_ext_ampa_i = 1.62 * nS         # max conductance on interneurons (inhibitory)
 g_rec_ampa_i = 0.04 * nS
 g_nmda_i = 0.13 * nS
-g_gaba_i = 1 * nS
+g_gaba_i = 1.0 * nS
 
 # connection weight within selective sub-populations
 wp = 1.7
@@ -131,12 +126,12 @@ s_tot : 1
 
 
 # make the inhibitory neurons
-Pi = NeuronGroup(N=Ni, model=eqs_i, threshold=Vt_i, reset=Vr_i, \
-refractory=tr_i, clock=simulation_clock, order=2)
+Pi = NeuronGroup(N=Ni, model=eqs_i, threshold=Vt_i, reset=Vr_i,
+    refractory=tr_i, clock=simulation_clock, order=2)
 
 # make the excitatory neurons
-Pe = NeuronGroup(N=Ne, model=eqs_e, threshold=Vt_e, reset=Vr_e, \
-refractory=tr_e, clock=simulation_clock, order=2)  
+Pe = NeuronGroup(N=Ne, model=eqs_e, threshold=Vt_e, reset=Vr_e,
+    refractory=tr_e, clock=simulation_clock, order=2)  
 
 # divide excitatory neurons into sub-groups
 Pe1 = Pe.subgroup(Ne1)
