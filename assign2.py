@@ -215,9 +215,10 @@ def record_decision(correct,dtime):
     ftrial.close()
 
 def get_rate(r):
-    i = min(0,len(r)-10)
-    j = len(r)
-    return numpy.average(numpy.array(r[i:j]))
+    if len(r) <= 0:
+	return 0
+    else:
+	return r[-1]
 
 @network_operation(decision_clock,when='end')
 def check_decision(decision_clock):
