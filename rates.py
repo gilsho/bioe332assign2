@@ -93,10 +93,11 @@ def load_rates(filename):
 def load_coherence_stats(c,ntrials):
     ncorrect = 0
     dtimes = []
+    f = open('coh' + str(c) +'.dat')
     for i in range(1,ntrials+1):
-        f = open(str(c) + '/' + 'trial' + str(i) + 'dat')
-        ncorrect += int(f.readline())
-        dtimes.append(float(f.readline()))
+        sline = f.readline().split(';') 
+        ncorrect += int(sline[0])
+        dtimes.append(float(sline[1]))
     mean = numpy.mean(dtimes)
     stdev = numpy.std(dtimes)
     perc = 1.0*ncorrect/ntrials
@@ -115,7 +116,7 @@ def load_stats(coh,ntrials):
 
 
 coh = [3,6.05,12.2,24.6,49.59,100]
-ntrials = 100
+ntrials = 20
 #load_stats(coh,ntrials)
 
 

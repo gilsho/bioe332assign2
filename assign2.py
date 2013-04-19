@@ -5,21 +5,25 @@ from matplotlib.pyplot import *
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('-k', type = int, default = 0)
-#parser.add_argument('-s', type = int, default = 0)
-#parser.add_argument('-c', type = float, default = 0)
+#parser.add_argument('-k', type = int, default = 0)
+parser.add_argument('-s', type = int, default = 0)
+parser.add_argument('-c', type = float, default = 0)
 pa = parser.parse_args()
-#numpy.random.seed(pa.s)
-numpy.random.seed(pa.k)
+#numpy.random.seed(pa.k)
 
 # since we can receive only one argument from qsub, we parse this
 # argument to determine the coherence and trial number
 
-N_TRIALS_PER_LEVEL = 20
-COHERENCE_LEVELS = [3,6.05,12.2,24.6,49.59,100]
+# N_TRIALS_PER_LEVEL = 20
+# COHERENCE_LEVELS = [3,6.05,12.2,24.6,49.59,100]
 
-c = COHERENCE_LEVELS[pa.k/N_TRIALS_PER_LEVEL]
-trial = pa.k % N_TRIALS_PER_LEVEL
+# c = COHERENCE_LEVELS[pa.k/N_TRIALS_PER_LEVEL]
+# trial = pa.k % N_TRIALS_PER_LEVEL
+
+c = pa.c
+trial = pa.s
+
+numpy.random.seed(int(c*100+trial))
 
 # population sizes
 Ne = 1600               # number of excitatory (pyramidal) neurons
@@ -205,10 +209,9 @@ def update_rates(rate_clock):
         PGe2.rate = fext
 
 def record_decision(correct,dtime):
-    ftrial = open('coh' + str(c) + 'trial' + 
-                   str(trial) + '.dat','w+')
-    ftrial.write(str(correct) + '\n')
-    ftrial.write(str(dtime/msecond) + '\n')
+    ftrial = open('coh' + str(c) + '.dat','a')
+    ftrial.write(str(correct) + ';')
+    ftrial.write(str(dtime) + '\n')
     ftrial.close()
 
 def get_rate(r):
