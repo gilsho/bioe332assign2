@@ -66,19 +66,20 @@ def make_coherence_plot(coh,cor,name=''):
     alpha = 9.2
     beta = 1.5
     nmfunc = 100*(1-0.5*numpy.exp(-(x_vec/alpha)**beta))
-    fig = figure()
-    semilogx(coh,corr,'ko')
+    figure()
+    semilogx(coh,cor,'ko')
     semilogx(x_vec,nmfunc,'r')
     axis([0,100,50,100])
     ylabel('Coherence, %')
-    xlabel('%% correct')
+    xlabel('Correct, %')
     if name is not '':
         savefig(name)
 
 def make_decision_time_plot(coh,mean,stdev,name=''):
     #times must be a numpy array
-    plot(coh,mean,'k')
-    errorbar(coh,mean,yerr=stdev,fmt='ko')
+    figure()
+    semilogx(coh,mean,'k')
+    errorbar(coh,mean,yerr=stdev,fmt='k')
     if name is not '':
         savefig(name)
 
@@ -108,14 +109,17 @@ def load_stats(coh,ntrials):
     stdev = []
     mean = []
     for c in coh:
-        (p,m.s) = load_coherence_stats(c,ntrials)
-        perc.append(p)
+        (p,m,s) = load_coherence_stats(c,ntrials)
+        perc.append(p*100)
         mean.append(m)
         stdev.append(s)
+    make_coherence_plot(coh,perc,'coherence_correct')
+    make_decision_time_plot(coh,mean,stdev,'coherence_dtime')
 
 
 
-coh = [3,6.05,12.2,24.6,49.59,100]
+
+coh = [3.0,6.05,12.2,24.6,49.59,100.0]
 ntrials = 20
 #load_stats(coh,ntrials)
 
